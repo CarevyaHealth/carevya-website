@@ -232,23 +232,25 @@
       <div class="section-head" style="margin-bottom:0">
         <p class="eyebrow">Contact</p>
         <h2>Book a demo or start a pilot</h2>
-        <p class="lede">Tell us about your site and we'll show you how a Carevya consult works with your own team.</p>
+        <p class="lede">Pick a convenient date and time, and we'll show you how a Carevya consult works with your own team.</p>
         <div class="reach">
           <div class="line"><span>Email</span><strong>contact@carevya.in</strong></div>
           <div class="line" id="waLine" hidden><span>WhatsApp</span><strong id="waShown"></strong></div>
         </div>
       </div>
-      <form class="enquiry" id="enquiry" data-intro="Hello Carevya Connect, I would like to know more." novalidate>
-        <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" data-label="Your name" required data-required autocomplete="name" type="text"></div>
+      <form class="enquiry" id="enquiry" data-intro="Hello Carevya Connect, I would like to book a demo." novalidate>
+        <div class="field"><label for="f-name">Your name <span aria-hidden="true" style="color:var(--gold)">*</span></label><input id="f-name" name="name" data-label="Your name" required data-required autocomplete="name" type="text"></div>
         <div class="field"><label for="f-org">Organisation</label><input id="f-org" name="org" data-label="Organisation" autocomplete="organization" type="text"></div>
         <div class="field"><label for="f-type">You are</label><select id="f-type" name="type" data-label="You are"><option>Company OHC</option><option>Hospital or clinic</option><option>CSR or PHC programme</option><option>Doctor wanting to join the panel</option></select></div>
         <div class="field"><label for="f-city">Town or city</label><input id="f-city" name="city" data-label="Town or city" autocomplete="address-level2" type="text"></div>
-        <div class="field full"><label for="f-phone">Phone</label><input id="f-phone" name="phone" data-label="Phone" required data-required autocomplete="tel" type="tel" inputmode="tel"></div>
+        <div class="field full"><label for="f-phone">Phone <span aria-hidden="true" style="color:var(--gold)">*</span></label><input id="f-phone" name="phone" data-label="Phone" required data-required autocomplete="tel" type="tel" inputmode="tel"></div>
+        <div class="field"><label for="f-date">Preferred demo date</label><input id="f-date" name="date" data-label="Preferred demo date" type="date"></div>
+        <div class="field"><label for="f-slot">Preferred time</label><select id="f-slot" name="slot" data-label="Preferred time"><option>Morning (9 am – 12 pm)</option><option>Afternoon (12 – 4 pm)</option><option>Evening (4 – 8 pm)</option></select></div>
         <div class="field full"><label for="f-msg">How can we help?</label><textarea id="f-msg" name="msg" data-label="How can we help?" placeholder="For example: we run an OHC for 400 workers and need regular doctor and surgical opinions."></textarea></div>
-        <p class="err" id="err" hidden>Please add your name and phone number.</p>
+        <p class="err" id="err" hidden>Please fill in the required fields (marked *).</p>
         <div class="form-foot">
-          <small>We'll prepare your message to send on WhatsApp or email.</small>
-          <button class="btn btn-primary" type="submit">Prepare my message</button>
+          <small>Next, send it to us on WhatsApp in one tap.</small>
+          <button class="btn btn-primary" type="submit">Request a demo</button>
         </div>
         <div class="result" id="result" hidden>
           <pre id="msgOut"></pre>

@@ -35,6 +35,16 @@ var WHATSAPP_NUMBER = "918105352762";
 
   var form = document.getElementById("enquiry");
   if (!form) return;
+
+  // Dates: no past days, readable format in the message
+  var pad = function(n){ return (n < 10 ? "0" : "") + n; };
+  var now = new Date(), today = now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
+  form.querySelectorAll('input[type="date"]').forEach(function(d){ d.min = today; });
+  var readable = function(v){
+    var p = v.split("-"); if (p.length !== 3) return v;
+    var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+  };
   var intro = form.getAttribute("data-intro") || "Hello Carevya Health,";
 
   form.addEventListener("submit", function(e){
@@ -47,6 +57,7 @@ var WHATSAPP_NUMBER = "918105352762";
     var lines = [intro, ""], note = "";
     form.querySelectorAll("[data-label]").forEach(function(el){
       var val = el.value.trim(); if (!val) return;
+      if (el.type === "date") val = readable(val);
       if (el.tagName === "TEXTAREA") note = val; else lines.push(el.getAttribute("data-label") + ": " + val);
     });
     if (note) { lines.push(""); lines.push(note); }
