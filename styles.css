@@ -320,3 +320,7 @@ header.bar.night .theme-btn:hover{border-color:var(--night-gold);color:var(--nig
 .plans:has(> .plan:nth-child(2):last-child){grid-template-columns:repeat(2, minmax(0,1fr))}
 @media (max-width: 860px){.plans:has(> .plan:nth-child(2):last-child){grid-template-columns:1fr}}
 #principles .who{grid-template-columns:repeat(auto-fit, minmax(200px, 1fr))}
+.plans.doctors{grid-template-columns:repeat(auto-fill, minmax(260px, 1fr))}
+.plan .eyebrow{margin:0}
+.plan ul{align-content:start}
+.plan .price a{color:var(--accent);text-decoration:none;font-weight:500}.plan .price a:hover{text-decoration:underline}

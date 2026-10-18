@@ -1,5 +1,5 @@
 // Set your business WhatsApp number here (country code + number, digits only), e.g. "919876543210".
-var WHATSAPP_NUMBER = "";
+var WHATSAPP_NUMBER = "918105352762";
 
 (function(){
   var y = document.getElementById("yr"); if (y) y.textContent = new Date().getFullYear();
