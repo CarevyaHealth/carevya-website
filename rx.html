@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carevya Prescription</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gloock&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: form on the left, live A4 prescription on the right; stacked with tabs on phones */
+:root{
+  --bg:#F3F6F5; --surface:#FFFFFF; --ink:#0B2523; --muted:#52686A; --line:#DCE5E3;
+  --accent:#0E5C57; --accent-ink:#FFFFFF; --accent-soft:#E3EFEC; --gold:#B08A3E; --gold-soft:#F7F0E1;
+  --danger:#B4432F; --night:#08201F;
+  --display:"Gloock", Georgia, serif; --body:"Hanken Grotesk", "Segoe UI", system-ui, sans-serif; --mono:"IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#071514; --surface:#0E2120; --ink:#E7F0EE; --muted:#9DB3B0; --line:#1F3634;
+  --accent:#4FC1B4; --accent-ink:#04201D; --accent-soft:#11302D; --gold:#D4B06A; --gold-soft:#2A2416; --danger:#F08A73; color-scheme:dark; } }
+:root[data-theme="dark"]{ --bg:#071514; --surface:#0E2120; --ink:#E7F0EE; --muted:#9DB3B0; --line:#1F3634;
+  --accent:#4FC1B4; --accent-ink:#04201D; --accent-soft:#11302D; --gold:#D4B06A; --gold-soft:#2A2416; --danger:#F08A73; color-scheme:dark; }
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+[hidden]{display:none!important}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--night)}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--night);color:#ECF3F1}
+header.top .in{max-width:1320px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:1.25rem}
+.brand span{color:#D4B06A}
+.brand svg{width:30px;height:30px}
+.top small{color:#A9BEBB;font-size:.85rem}
+.tabs{display:none;gap:6px;background:rgba(255,255,255,.08);border-radius:999px;padding:4px}
+.tabs button{border:0;background:transparent;color:#ECF3F1;font:inherit;font-weight:600;font-size:.9rem;padding:7px 14px;border-radius:999px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:#D4B06A;color:#1B1606}
+main{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:24px;padding-block:22px 40px;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px))}
+@media (max-width:980px){ main{grid-template-columns:1fr} .tabs{display:flex} body[data-view="write"] #previewPane{display:none} body[data-view="preview"] #formPane{display:none} }
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 18px 20px;margin-bottom:16px}
+.card h2{margin:0 0 12px;font-family:var(--display);font-weight:400;font-size:1.25rem;display:flex;align-items:center;gap:10px}
+.card h2 .n{font-family:var(--mono);font-size:.75rem;color:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:1px 8px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid .full{grid-column:1/-1}
+.grid3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+@media (max-width:560px){ .grid,.grid3{grid-template-columns:1fr} }
+label{display:block;font-size:.82rem;font-weight:600;margin-bottom:5px}
+label .req{color:var(--gold)}
+input,select,textarea{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px}
+textarea{min-height:64px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.hint{font-size:.8rem;color:var(--muted);margin-top:4px}
+.med{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--bg)}
+.med .row{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:10px}
+.med .row2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;margin-top:10px;align-items:end}
+@media (max-width:560px){ .med .row,.med .row2{grid-template-columns:1fr 1fr} .med .row input:first-child{grid-column:1/-1} }
+.med label{font-size:.75rem}
+.rm{border:1px solid var(--line);background:transparent;color:var(--danger);border-radius:10px;padding:9px 12px;font:inherit;font-size:.85rem;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:11px 20px;font:inherit;font-weight:600;font-size:.95rem;border:1px solid transparent;cursor:pointer}
+.btn-primary{background:var(--accent);color:var(--accent-ink)}
+.btn-gold{background:#D4B06A;color:#1B1606}
+.btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.9rem}
+.check input{width:20px;height:20px;margin-top:2px;flex:none}
+.sigwrap{border:1px dashed var(--line);border-radius:12px;background:#fff;position:relative}
+#sig{display:block;width:100%;height:130px;touch-action:none;cursor:crosshair}
+.sigwrap .ph{position:absolute;inset:0;display:grid;place-items:center;color:#9aa;font-size:.9rem;pointer-events:none}
+.actions{position:sticky;bottom:0;background:var(--bg);padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;gap:10px;border-top:1px solid var(--line);z-index:5}
+.msg{font-size:.88rem;margin-top:8px}
+.msg.err{color:var(--danger)} .msg.ok{color:var(--accent)}
+.notice{background:var(--gold-soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.85rem;color:var(--ink);margin-bottom:16px}
+/* Preview */
+#previewPane{min-width:0}
+.pv-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px}
+.pv-head h2{margin:0;font-family:var(--display);font-weight:400;font-size:1.2rem}
+.pv-head small{color:var(--muted)}
+.paperbox{overflow:hidden;border-radius:6px;box-shadow:0 20px 50px -30px rgba(0,0,0,.45);position:sticky;top:80px}
+/* The prescription sheet itself: always light, A4 at 96 dpi */
+.sheet{width:794px;min-height:1123px;background:#fff;color:#14201f;font-family:"Hanken Grotesk",Arial,sans-serif;font-size:13px;line-height:1.45;padding:34px 44px 30px;transform-origin:top left;position:relative;display:flex;flex-direction:column}
+.sheet .lh{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0E5C57;padding-bottom:14px}
+.sheet .lh .b{display:flex;gap:12px;align-items:center}
+.sheet .lh .mk{width:48px;height:48px;border-radius:13px;background:#0E5C57;display:grid;place-items:center}
+.sheet .lh .mk svg{width:34px;height:34px}
+.sheet .lh .nm{font-family:"Gloock",Georgia,serif;font-size:26px;color:#0B2523;line-height:1}
+.sheet .lh .nm span{color:#B08A3E}
+.sheet .lh .sub{font-size:11px;color:#52686A;letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.sheet .lh .ct{text-align:right;font-size:11.5px;color:#3d5153;line-height:1.55}
+.sheet .doc{display:flex;justify-content:space-between;gap:20px;padding:14px 0 12px;border-bottom:1px solid #dce5e3}
+.sheet .doc b{font-size:16px;color:#0B2523}
+.sheet .doc .q{color:#3d5153}
+.sheet .doc .reg{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:#0E5C57;margin-top:2px}
+.sheet .meta{text-align:right;font-size:12px;color:#3d5153}
+.sheet .meta .id{font-family:"IBM Plex Mono",monospace;color:#0B2523}
+.sheet .pt{display:grid;grid-template-columns:2fr 1fr 1fr 1.4fr;gap:8px;background:#f3f7f6;border-radius:8px;padding:10px 12px;margin-top:12px}
+.sheet .pt span{display:block;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#6a7f80}
+.sheet .pt b{font-size:13px;color:#0B2523;font-weight:600}
+.sheet .sec{margin-top:12px}
+.sheet .sec h4{margin:0 0 3px;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#B08A3E}
+.sheet .sec p{margin:0;white-space:pre-wrap}
+.sheet .rx{display:flex;align-items:baseline;gap:10px;margin-top:16px}
+.sheet .rx .sym{font-family:"Gloock",Georgia,serif;font-size:30px;color:#0E5C57;line-height:1}
+.sheet table{width:100%;border-collapse:collapse;margin-top:6px}
+.sheet th{text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#6a7f80;border-bottom:1px solid #cfdcd9;padding:5px 6px}
+.sheet td{border-bottom:1px solid #eaf0ef;padding:7px 6px;vertical-align:top}
+.sheet td.mname{font-weight:700;color:#0B2523;text-transform:uppercase;letter-spacing:.01em}
+.sheet td .ins{display:block;font-weight:400;text-transform:none;color:#52686A;font-size:11.5px;letter-spacing:0}
+.sheet .empty{color:#9aa;font-style:italic}
+.sheet .grow{flex:1}
+.sheet .signrow{display:flex;justify-content:space-between;align-items:flex-end;margin-top:18px;gap:20px}
+.sheet .fu{font-size:12.5px}
+.sheet .fu b{color:#0B2523}
+.sheet .sign{text-align:center;min-width:220px}
+.sheet .sign img{max-height:60px;max-width:220px;display:block;margin:0 auto 2px}
+.sheet .sign .ln{border-top:1px solid #9fb0ae;padding-top:4px;font-size:12px;color:#0B2523;font-weight:600}
+.sheet .sign .ln small{display:block;font-weight:400;color:#52686A;font-size:10.5px}
+.sheet .foot{margin-top:16px;border-top:1px solid #dce5e3;padding-top:8px;font-size:9.8px;color:#6a7f80;line-height:1.5}
+.sheet .foot b{color:#3d5153}
+@media (max-width:980px){.hide-sm{display:none}}
+@media (max-width:560px){ .brand{font-size:1.05rem} .brand span{display:none} .tabs button{padding:7px 12px} .actions .btn{padding:10px 14px;font-size:.9rem} }
+</style>
+</head>
+<body>
+
+
+<header class="top"><div class="in">
+  <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="1" y="1" width="38" height="38" rx="11" fill="#D4B06A"/><path d="M7 22h7l3-7 5 14 3-7h8" fill="none" stroke="#1B1606" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Carevya <span>Prescription</span></div>
+  <div class="tabs" role="group" aria-label="View"><button type="button" id="tWrite" aria-pressed="true">Write</button><button type="button" id="tPrev" aria-pressed="false">Preview</button></div>
+  <small class="hide-sm">For Carevya doctors</small>
+</div></header>
+
+<main>
+<section id="formPane">
+  <div class="notice">For registered Carevya doctors only. Nothing you type is saved on any server; the prescription is created on this device. Send a copy of every prescription to <b>contact@carevya.in</b> for Carevya's records.</div>
+
+  <div class="card"><h2><span class="n">1</span>Doctor</h2>
+    <div class="grid">
+      <div class="full"><label for="d-name">Doctor <span class="req">*</span></label>
+        <select id="d-name"></select></div>
+      <div><label for="d-qual">Qualification <span class="req">*</span></label><input id="d-qual"></div>
+      <div><label for="d-reg">Registration (council and no.) <span class="req">*</span></label><input id="d-reg" placeholder="e.g. OCMR 12345"></div>
+    </div>
+  </div>
+
+  <div class="card"><h2><span class="n">2</span>Patient</h2>
+    <div class="grid">
+      <div class="full"><label for="p-name">Patient name <span class="req">*</span></label><input id="p-name" autocomplete="off"></div>
+      <div><label for="p-age">Age <span class="req">*</span></label><input id="p-age" inputmode="numeric" placeholder="e.g. 46 years"></div>
+      <div><label for="p-sex">Sex <span class="req">*</span></label><select id="p-sex"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+      <div><label for="p-phone">Phone</label><input id="p-phone" type="tel" inputmode="tel" autocomplete="off"></div>
+      <div><label for="c-date">Date <span class="req">*</span></label><input id="c-date" type="date"></div>
+      <div><label for="c-mode">Consultation mode</label><select id="c-mode"><option>Video</option><option>Audio</option><option>Text / chat</option><option>Video, with doctor at partner site</option></select></div>
+      <div><label for="p-wt">Weight / vitals</label><input id="p-wt" placeholder="e.g. 71 kg, BP 136/84"></div>
+    </div>
+  </div>
+
+  <div class="card"><h2><span class="n">3</span>Clinical notes</h2>
+    <div class="grid">
+      <div class="full"><label for="n-cc">Chief complaints</label><textarea id="n-cc" placeholder="e.g. Fever and sore throat for 3 days"></textarea></div>
+      <div class="full"><label for="n-hx">Relevant history / findings</label><textarea id="n-hx" placeholder="e.g. Known diabetic, on metformin. Throat congested on video exam."></textarea></div>
+      <div class="full"><label for="n-dx">Diagnosis / provisional diagnosis <span class="req">*</span></label><input id="n-dx"></div>
+      <div class="full"><label for="n-inv">Investigations advised</label><input id="n-inv" placeholder="e.g. CBC, HbA1c, Lipid profile"></div>
+    </div>
+  </div>
+
+  <div class="card"><h2><span class="n">4</span>Medicines</h2>
+    <div id="meds"></div>
+    <button type="button" class="btn btn-ghost" id="addMed">+ Add medicine</button>
+    <p class="hint">Write medicine names clearly, generic names preferred. Schedule X and narcotic medicines cannot be prescribed by teleconsultation.</p>
+  </div>
+
+  <div class="card"><h2><span class="n">5</span>Advice and follow-up</h2>
+    <div class="grid">
+      <div class="full"><label for="n-adv">Advice / instructions</label><textarea id="n-adv" placeholder="e.g. Warm saline gargles. Plenty of fluids. Visit a hospital if breathing difficulty or high fever persists."></textarea></div>
+      <div><label for="n-fu">Follow-up</label><input id="n-fu" placeholder="e.g. After 5 days / with reports"></div>
+    </div>
+  </div>
+
+  <div class="card"><h2><span class="n">6</span>Consent and signature</h2>
+    <label class="check"><input type="checkbox" id="consent"> <span>Patient consent for teleconsultation was obtained, and the patient's identity was confirmed. <span class="req">*</span></span></label>
+    <div style="margin-top:14px"><label>Signature <span class="req">*</span></label>
+      <div class="sigwrap"><canvas id="sig" aria-label="Signature pad: sign with finger or mouse"></canvas><div class="ph" id="sigPh">Sign here with your finger or mouse</div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+        <button type="button" class="btn btn-ghost" id="sigClear">Clear signature</button>
+        <label class="check" style="align-items:center;margin:0"><input type="checkbox" id="sigRemember"> <span>Remember my signature on this device</span></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn btn-primary" id="pdfBtn">Download PDF</button>
+    <button type="button" class="btn btn-gold" id="shareBtn">Share on WhatsApp</button>
+    <button type="button" class="btn btn-ghost" id="newBtn">New patient</button>
+    <div class="msg" id="msg" role="status" style="flex-basis:100%"></div>
+  </div>
+</section>
+
+<section id="previewPane" aria-label="Prescription preview">
+  <div class="pv-head"><h2>Preview</h2><small>Updates as you type</small></div>
+  <div class="paperbox" id="paperbox"><div id="sheet" class="sheet">
+    <div class="lh">
+      <div class="b"><div class="mk"><svg viewBox="0 0 40 40"><path d="M5 22h7l3-7 5 14 3-7h12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><div class="nm">Carevya <span>Health</span></div><div class="sub">Teleconsultation prescription</div></div></div>
+      <div class="ct">carevya.in<br>contact@carevya.in<br>WhatsApp +91 81053 52762</div>
+    </div>
+    <div class="doc">
+      <div><b id="s-doc">Doctor name</b><div class="q" id="s-qual">Qualification</div><div class="reg" id="s-reg">Reg. No.</div></div>
+      <div class="meta">Date: <b id="s-date"></b><br>Mode: <span id="s-mode"></span><br>Rx ID: <span class="id" id="s-id"></span></div>
+    </div>
+    <div class="pt">
+      <div><span>Patient</span><b id="s-pname">—</b></div>
+      <div><span>Age</span><b id="s-age">—</b></div>
+      <div><span>Sex</span><b id="s-sex">—</b></div>
+      <div><span>Weight / vitals</span><b id="s-wt">—</b></div>
+    </div>
+    <div class="sec" id="b-cc"><h4>Chief complaints</h4><p id="s-cc"></p></div>
+    <div class="sec" id="b-hx"><h4>History / findings</h4><p id="s-hx"></p></div>
+    <div class="sec"><h4>Diagnosis</h4><p id="s-dx" class="empty">Provisional diagnosis</p></div>
+    <div class="sec" id="b-inv"><h4>Investigations advised</h4><p id="s-inv"></p></div>
+    <div class="rx"><span class="sym">℞</span></div>
+    <table><thead><tr><th style="width:28px">#</th><th>Medicine</th><th>Dose</th><th>Frequency</th><th>Timing</th><th>Duration</th></tr></thead><tbody id="s-meds"></tbody></table>
+    <div class="sec" id="b-adv"><h4>Advice</h4><p id="s-adv"></p></div>
+    <div class="grow"></div>
+    <div class="signrow">
+      <div class="fu" id="b-fu">Follow-up: <b id="s-fu"></b></div>
+      <div class="sign"><img id="s-sig" alt="" hidden><div class="ln"><span id="s-doc2">Doctor</span><small id="s-reg2"></small></div></div>
+    </div>
+    <div class="foot">This prescription was issued after a teleconsultation, as per the <b>Telemedicine Practice Guidelines, 2020</b> (Board of Governors in supersession of MCI). Patient consent obtained. Not valid for Schedule X / narcotic medicines. <b>In an emergency, call 108 / 112</b> and go to the nearest hospital. Verify the doctor's registration with the State Medical / Dental Council.</div>
+  </div></div>
+</section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// Doctors' panel: registration left blank where not yet provided; the doctor types it once
+var DOCTORS = [
+  { name: "Dr. Saurav Jha", qual: "MBBS, MBA, CCDM", reg: "" },
+  { name: "Dr. Biprabar Nayak", qual: "MBBS, MS (General Surgery), FMIS", reg: "OCMR 10698" },
+  { name: "Dr. Anirban De", qual: "MBBS, FICM, CCDM", reg: "OCMR 37977" },
+  { name: "Dr. Asish Kumar Pati", qual: "MBBS", reg: "" },
+  { name: "Dr. Aryan Sachan", qual: "MBBS", reg: "" },
+  { name: "Dr. Hardik Kansal", qual: "BDS", reg: "" }
+];
+var FREQ = ["1-0-0 (morning)","0-1-0 (afternoon)","0-0-1 (night)","1-0-1","1-1-1","1-1-1-1","Once a week","SOS (if needed)","As directed"];
+var TIMING = ["After food","Before food","With food","Empty stomach","At bedtime","—"];
+
+var $ = function(id){ return document.getElementById(id); };
+var store = {
+  get: function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set: function(k,v){ try { localStorage.setItem(k,v); } catch(e){} },
+  del: function(k){ try { localStorage.removeItem(k); } catch(e){} }
+};
+var pad = function(n){ return (n<10?"0":"")+n; };
+var todayISO = function(){ var d=new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); };
+var nice = function(v){ if(!v) return ""; var p=v.split("-"); var d=new Date(+p[0],+p[1]-1,+p[2]); return d.toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}); };
+var rxId = "";
+function newId(){ var d=new Date(); rxId = "CRV-" + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + "-" + Math.random().toString(36).slice(2,6).toUpperCase(); }
+
+// Doctor select
+DOCTORS.forEach(function(d,i){ var o=document.createElement("option"); o.value=i; o.textContent=d.name; $("d-name").appendChild(o); });
+var regKey = function(i){ return "carevya-reg-" + i; };
+function applyDoctor(){
+  var i=+$("d-name").value, d=DOCTORS[i];
+  $("d-qual").value = d.qual;
+  $("d-reg").value = d.reg || store.get(regKey(i)) || "";
+  store.set("carevya-doctor", String(i));
+  render();
+}
+$("d-name").addEventListener("change", applyDoctor);
+$("d-reg").addEventListener("input", function(){ var i=+$("d-name").value; if(!DOCTORS[i].reg) store.set(regKey(i), $("d-reg").value.trim()); });
+
+// Medicines
+function medRow(){
+  var w=document.createElement("div"); w.className="med";
+  var fo=FREQ.map(function(f){return "<option>"+f+"</option>";}).join(""), to=TIMING.map(function(t){return "<option>"+t+"</option>";}).join("");
+  w.innerHTML = '<div class="row"><div><label>Medicine name and strength</label><input class="m-name" placeholder="e.g. Paracetamol 650 mg tablet" autocomplete="off"></div>'
+    + '<div><label>Dose</label><input class="m-dose" placeholder="e.g. 1 tablet"></div></div>'
+    + '<div class="row2"><div><label>Frequency</label><select class="m-freq">'+fo+'</select></div>'
+    + '<div><label>Timing</label><select class="m-time">'+to+'</select></div>'
+    + '<div><label>Duration</label><input class="m-dur" placeholder="e.g. 5 days"></div>'
+    + '<button type="button" class="rm" aria-label="Remove medicine">Remove</button></div>'
+    + '<div style="margin-top:10px"><label>Instructions (optional)</label><input class="m-ins" placeholder="e.g. Stop if rash appears"></div>';
+  w.querySelector(".rm").addEventListener("click", function(){ w.remove(); if(!$("meds").children.length) $("meds").appendChild(medRow()); render(); });
+  return w;
+}
+$("addMed").addEventListener("click", function(){ var r=medRow(); $("meds").appendChild(r); r.querySelector(".m-name").focus(); render(); });
+
+// Signature pad
+var cv=$("sig"), ctx=cv.getContext("2d"), drawing=false, hasSig=false, last=null;
+function sizeSig(){
+  var r=cv.getBoundingClientRect(), dpr=window.devicePixelRatio||1, keep = hasSig ? cv.toDataURL() : null;
+  cv.width=Math.max(10,r.width*dpr); cv.height=Math.max(10,r.height*dpr); ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.lineWidth=2.2; ctx.lineCap="round"; ctx.lineJoin="round"; ctx.strokeStyle="#0B2523";
+  if(keep){ var im=new Image(); im.onload=function(){ ctx.drawImage(im,0,0,r.width,r.height); }; im.src=keep; }
+}
+function pt(e){ var r=cv.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+cv.addEventListener("pointerdown", function(e){ drawing=true; last=pt(e); cv.setPointerCapture(e.pointerId); $("sigPh").hidden=true; });
+cv.addEventListener("pointermove", function(e){ if(!drawing) return; var p=pt(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; hasSig=true; });
+function endSig(){ if(!drawing) return; drawing=false; if(hasSig){ if($("sigRemember").checked) store.set("carevya-sig", cv.toDataURL()); render(); } }
+cv.addEventListener("pointerup", endSig); cv.addEventListener("pointercancel", endSig);
+$("sigClear").addEventListener("click", function(){ ctx.clearRect(0,0,cv.width,cv.height); hasSig=false; $("sigPh").hidden=false; store.del("carevya-sig"); render(); });
+$("sigRemember").addEventListener("change", function(){ if(this.checked){ store.set("carevya-sig-on","1"); if(hasSig) store.set("carevya-sig", cv.toDataURL()); } else { store.del("carevya-sig-on"); store.del("carevya-sig"); } });
+
+// Live preview
+function txt(id, val, blockId){ $(id).textContent = val; if(blockId) $(blockId).hidden = !val; }
+function render(){
+  var i=+$("d-name").value, dn=DOCTORS[i] ? DOCTORS[i].name : "";
+  txt("s-doc", dn); txt("s-doc2", dn); txt("s-qual", $("d-qual").value);
+  var reg=$("d-reg").value.trim(); txt("s-reg", reg ? "Reg. No. " + reg : "Reg. No. (required)"); txt("s-reg2", $("d-qual").value + (reg ? " · Reg. " + reg : ""));
+  txt("s-date", nice($("c-date").value)); txt("s-mode", $("c-mode").value); txt("s-id", rxId);
+  txt("s-pname", $("p-name").value.trim() || "—"); txt("s-age", $("p-age").value.trim() || "—"); txt("s-sex", $("p-sex").value || "—"); txt("s-wt", $("p-wt").value.trim() || "—");
+  txt("s-cc", $("n-cc").value.trim(), "b-cc"); txt("s-hx", $("n-hx").value.trim(), "b-hx"); txt("s-inv", $("n-inv").value.trim(), "b-inv");
+  var dx=$("n-dx").value.trim(); $("s-dx").textContent = dx || "Provisional diagnosis"; $("s-dx").className = dx ? "" : "empty";
+  txt("s-adv", $("n-adv").value.trim(), "b-adv"); txt("s-fu", $("n-fu").value.trim(), "b-fu");
+  var tb=$("s-meds"); tb.innerHTML=""; var n=0;
+  [].forEach.call($("meds").children, function(m){
+    var name=m.querySelector(".m-name").value.trim(); if(!name) return; n++;
+    var tr=document.createElement("tr");
+    var cells=[String(n), null, m.querySelector(".m-dose").value.trim(), m.querySelector(".m-freq").value, m.querySelector(".m-time").value, m.querySelector(".m-dur").value.trim()];
+    cells.forEach(function(c,ci){ var td=document.createElement("td");
+      if(ci===1){ td.className="mname"; td.textContent=name; var ins=m.querySelector(".m-ins").value.trim(); if(ins){ var s=document.createElement("span"); s.className="ins"; s.textContent=ins; td.appendChild(s);} }
+      else td.textContent=c;
+      tr.appendChild(td); });
+    tb.appendChild(tr);
+  });
+  if(!n){ tb.innerHTML='<tr><td colspan="6" class="empty">Medicines will appear here</td></tr>'; }
+  var img=$("s-sig"); if(hasSig){ img.src=cv.toDataURL(); img.hidden=false; } else { img.hidden=true; img.removeAttribute("src"); }
+  fit();
+}
+document.addEventListener("input", function(e){ if(!cv.contains(e.target)) render(); });
+document.addEventListener("change", function(e){ if(e.target.id!=="d-name") render(); });
+
+// Scale A4 sheet to the preview column
+function fit(){
+  var box=$("paperbox"), sh=$("sheet"), w=box.clientWidth || 794, s=Math.min(1, w/794);
+  sh.style.transform="scale("+s+")"; box.style.height=(sh.offsetHeight*s)+"px";
+}
+window.addEventListener("resize", function(){ fit(); sizeSig(); });
+
+// Phone tabs
+function view(v){ document.body.setAttribute("data-view", v); $("tWrite").setAttribute("aria-pressed", v==="write"); $("tPrev").setAttribute("aria-pressed", v==="preview"); if(v==="preview") fit(); else sizeSig(); window.scrollTo(0,0); }
+$("tWrite").addEventListener("click", function(){ view("write"); }); $("tPrev").addEventListener("click", function(){ view("preview"); });
+
+// Validation
+function check(){
+  var miss=[];
+  if(!$("d-qual").value.trim()) miss.push("qualification");
+  if(!$("d-reg").value.trim()) miss.push("registration number");
+  if(!$("p-name").value.trim()) miss.push("patient name");
+  if(!$("p-age").value.trim()) miss.push("age");
+  if(!$("p-sex").value) miss.push("sex");
+  if(!$("c-date").value) miss.push("date");
+  if(!$("n-dx").value.trim()) miss.push("diagnosis");
+  var anyMed=[].some.call($("meds").children, function(m){ return m.querySelector(".m-name").value.trim(); });
+  if(!anyMed && !$("n-adv").value.trim()) miss.push("at least one medicine or advice");
+  if(!$("consent").checked) miss.push("consent confirmation");
+  if(!hasSig) miss.push("signature");
+  return miss;
+}
+function say(t, ok){ var m=$("msg"); m.textContent=t; m.className="msg " + (ok ? "ok" : "err"); }
+
+// PDF
+function fileName(){ var p=$("p-name").value.trim().replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"") || "patient"; return "Carevya-Rx-" + p + "-" + rxId + ".pdf"; }
+function makePdf(){
+  // Capture an unscaled copy placed off-screen, so no scaling or clipping affects the PDF
+  var holder=document.createElement("div"); holder.style.cssText="position:absolute;left:-10000px;top:0;width:794px;background:#fff";
+  var sh=$("sheet").cloneNode(true); sh.removeAttribute("id"); sh.id="sheetCopy"; sh.style.transform="none";
+  holder.appendChild(sh); document.body.appendChild(holder);
+  var cleanup=function(){ if(holder.parentNode) holder.parentNode.removeChild(holder); };
+  return html2canvas(sh, { scale: 2, backgroundColor: "#ffffff", useCORS: true, windowWidth: 1200 }).then(function(canvas){
+    cleanup();
+    var pdf = new window.jspdf.jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
+    var pw=pdf.internal.pageSize.getWidth(), ph=pdf.internal.pageSize.getHeight();
+    var imgH = canvas.height * pw / canvas.width, pageCanvasH = Math.floor(canvas.width * ph / pw), y=0, first=true;
+    while(y < canvas.height - 16){
+      var slice=document.createElement("canvas"); slice.width=canvas.width; slice.height=Math.min(pageCanvasH, canvas.height-y);
+      slice.getContext("2d").drawImage(canvas, 0, y, canvas.width, slice.height, 0, 0, canvas.width, slice.height);
+      if(!first) pdf.addPage(); first=false;
+      pdf.addImage(slice.toDataURL("image/jpeg", 0.92), "JPEG", 0, 0, pw, slice.height * pw / canvas.width);
+      y += pageCanvasH;
+    }
+    pdf.setProperties({ title: "Carevya prescription " + rxId, author: DOCTORS[+$("d-name").value].name, creator: "Carevya Health" });
+    return pdf;
+  }, function(err){ cleanup(); throw err; });
+}
+function guard(){
+  var miss=check(); if(miss.length){ say("Please add: " + miss.join(", ") + "."); if(document.body.getAttribute("data-view")==="preview") view("write"); return false; }
+  if(!window.html2canvas || !window.jspdf){ say("The PDF tools didn't load. Check your internet connection and reload the page."); return false; }
+  return true;
+}
+$("pdfBtn").addEventListener("click", function(){
+  if(!guard()) return; var b=this; b.disabled=true; say("Creating PDF…", true);
+  makePdf().then(function(pdf){ pdf.save(fileName()); say("PDF downloaded. Send it to the patient and a copy to contact@carevya.in.", true); })
+    .catch(function(){ say("Couldn't create the PDF. Please try again."); }).then(function(){ b.disabled=false; });
+});
+$("shareBtn").addEventListener("click", function(){
+  if(!guard()) return; var b=this; b.disabled=true; say("Preparing to share…", true);
+  makePdf().then(function(pdf){
+    var blob=pdf.output("blob"), file=new File([blob], fileName(), { type: "application/pdf" });
+    if(navigator.canShare && navigator.canShare({ files: [file] })){
+      return navigator.share({ files: [file], title: "Carevya prescription", text: "Your prescription from Carevya Health" })
+        .then(function(){ say("Shared. Remember to send a copy to contact@carevya.in.", true); })
+        .catch(function(e){ if(e && e.name==="AbortError") say("Sharing cancelled.", true); else { pdf.save(fileName()); say("Sharing isn't available here, so the PDF was downloaded instead. Attach it in WhatsApp.", true); } });
+    }
+    pdf.save(fileName()); say("Direct sharing isn't supported on this device, so the PDF was downloaded. Attach it in WhatsApp.", true);
+  }).catch(function(){ say("Couldn't create the PDF. Please try again."); }).then(function(){ b.disabled=false; });
+});
+
+// New patient: clears patient data, keeps doctor and signature
+$("newBtn").addEventListener("click", function(){
+  ["p-name","p-age","p-phone","p-wt","n-cc","n-hx","n-dx","n-inv","n-adv","n-fu"].forEach(function(id){ $(id).value=""; });
+  $("p-sex").value=""; $("c-date").value=todayISO(); $("consent").checked=false;
+  $("meds").innerHTML=""; $("meds").appendChild(medRow()); newId(); say("Ready for a new patient.", true); render(); window.scrollTo(0,0);
+});
+
+// Start
+(function(){
+  newId(); $("c-date").value=todayISO();
+  var saved=store.get("carevya-doctor"); if(saved!==null && DOCTORS[+saved]) $("d-name").value=saved;
+  $("meds").appendChild(medRow());
+  document.body.setAttribute("data-view","write");
+  sizeSig();
+  if(store.get("carevya-sig-on")==="1"){ $("sigRemember").checked=true; var s=store.get("carevya-sig"); if(s){ var im=new Image(); im.onload=function(){ var r=cv.getBoundingClientRect(); ctx.drawImage(im,0,0,r.width,r.height); hasSig=true; $("sigPh").hidden=true; render(); }; im.src=s; } }
+  applyDoctor();
+})();
+</script>
+
+</body>
+</html>
